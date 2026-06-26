@@ -3,56 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RegisCoin - Մուտք</title>
+    <title>RegisCoin - Mining System</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
             background: radial-gradient(circle at center, #0a192f 0%, #020c1b 100%);
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; color: #fff; padding: 20px;
+            color: #fff; min-height: 100vh; line-height: 1.6;
         }
-        .login-card {
-            background: rgba(10, 25, 47, 0.7);
-            border: 1px solid #00f2fe;
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 40px; border-radius: 16px;
-            width: 100%; max-width: 400px; text-align: center;
+        
+        header {
+            background: rgba(2, 12, 27, 0.85); backdrop-filter: blur(10px);
+            border-bottom: 1px solid #00f2fe; position: sticky; top: 0; z-index: 100;
+            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
         }
-        .login-card h2 { margin-bottom: 30px; font-weight: 600; letter-spacing: 1px; color: #00f2fe; }
-        .input-group { position: relative; margin-bottom: 25px; }
-        .input-group input {
-            width: 100%; padding: 12px 15px;
-            background: rgba(2, 12, 27, 0.8);
-            border: 1px solid #233554; border-radius: 8px;
-            color: #fff; font-size: 16px; outline: none;
-            transition: 0.3s;
+        .logo { font-size: 22px; font-weight: bold; color: #00f2fe; text-shadow: 0 0 10px rgba(0, 242, 254, 0.5); }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+        .about-btn {
+            color: #00f2fe; border: 1px solid #00f2fe; padding: 8px 16px; border-radius: 20px;
+            text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.3s; background: transparent;
         }
-        .input-group input:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
-        .btn-login {
-            width: 100%; padding: 12px;
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            border: none; border-radius: 8px; color: #020c1b;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-            transition: 0.3s; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+        .about-btn:hover { background: rgba(0, 242, 254, 0.1); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+        .logout-btn { background: #ff4a5a; color: #fff; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; display: none; }
+
+        /* Auth Բլոկ (Մուգ և Նեոնային) */
+        .auth-container {
+            max-width: 400px; margin: 40px auto; background: rgba(10, 25, 47, 0.8);
+            border: 1px solid #233554; border-radius: 20px; padding: 30px; text-align: center;
         }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6); }
+        .auth-container h2 { color: #00f2fe; margin-bottom: 20px; }
+        .auth-container input {
+            width: 100%; padding: 12px; margin-bottom: 15px; background: #020c1b;
+            border: 1px solid #233554; border-radius: 10px; color: #fff; outline: none;
+        }
+        .auth-container input:focus { border-color: #00f2fe; }
+        .auth-btn {
+            width: 100%; padding: 12px; background: #00f2fe; color: #020c1b;
+            border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .auth-btn:hover { box-shadow: 0 0 15px #00f2fe; }
+        .toggle-auth { margin-top: 15px; color: #8892b0; font-size: 14px; cursor: pointer; text-decoration: underline; }
+
+        /* Մայնինգի Գլխավոր Բլոկ */
+        .main-content { display: none; }
+        .hero-section { padding: 40px 20px 20px 20px; text-align: center; max-width: 800px; margin: 0 auto; }
+        .hero-section h1 { font-size: 2.3em; color: #fff; margin-bottom: 15px; }
+        .hero-section p { color: #8892b0; font-size: 16px; margin-bottom: 25px; }
+        
+        .game-container {
+            background: rgba(10, 25, 47, 0.6); border: 1px solid #00f2fe; border-radius: 20px;
+            padding: 30px; max-width: 400px; margin: 0 auto 40px auto; box-shadow: 0 0 25px rgba(0, 242, 254, 0.15);
+        }
+        .balance-text { font-size: 2.5em; font-weight: bold; color: #00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.4); }
+        .user-email-display { color: #8892b0; font-size: 14px; margin-bottom: 10px; }
+        
+        .main-btn {
+            width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #0a192f 0%, #020c1b 100%);
+            border: 4px solid #00f2fe; color: #00f2fe; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
+            margin: 20px 0; outline: none;
+        }
+        .main-btn:hover:not(:disabled) { box-shadow: 0 0 40px rgba(0, 242, 254, 0.5); transform: scale(1.02); }
+        .main-btn:disabled { border-color: #233554; color: #8892b0; box-shadow: none; cursor: not-allowed; }
+        .timer-text { font-size: 16px; color: #ff4a5a; margin-top: 10px; display: none; }
+
+        .listing-banner {
+            max-width: 1000px; margin: 40px auto; padding: 25px; text-align: center;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.1) 0%, rgba(10, 25, 47, 0.7) 100%);
+            border: 1px dashed #00f2fe; border-radius: 15px;
+        }
+        .listing-banner h3 { color: #00f2fe; margin-bottom: 10px; }
+        .listing-banner p { color: #ccd6f6; font-size: 15px; }
+
+        .section-title { text-align: center; color: #00f2fe; font-size: 24px; margin: 40px 0 20px 0; }
+        .rewards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 850px; margin: 0 auto; padding: 0 20px; }
+        .reward-link { text-decoration: none; display: block; }
+        .reward-card { background: rgba(10, 25, 47, 0.5); border: 1px solid #233554; border-radius: 15px; padding: 25px; text-align: center; transition: 0.3s; }
+        .reward-card:hover { border-color: #00f2fe; transform: translateY(-5px); }
+        .reward-icon { font-size: 40px; margin-bottom: 10px; }
+        .reward-card h4 { color: #fff; margin-bottom: 8px; }
+        .reward-card p { color: #8892b0; font-size: 14px; }
+
+        footer { background: #020c1b; border-top: 1px solid #233554; padding: 40px 20px; text-align: center; margin-top: 60px; }
+        .social-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; }
+        .social-links a { color: #8892b0; text-decoration: none; font-size: 15px; transition: 0.3s; }
+        .social-links a:hover { color: #00f2fe; }
+        .copy { color: #495670; font-size: 12px; }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <h2>REGIS COIN</h2>
-        <form action="kayq.html">
-            <div class="input-group">
-                <input type="text" placeholder="Լոգին (Օգտանուն)" required>
-            </div>
-            <div class="input-group">
-                <input type="password" placeholder="Գաղտնաբառ" required>
-            </div>
-            <button type="submit" class="btn-login">ՄՈՒՏՔ ԳՈՐԾԵԼ</button>
-        </form>
+    <header>
+        <div class="logo">REGIS NETWORK</div>
+        <div class="nav-right">
+            <a href="about.html" class="about-btn">Մեր Մասին (About)</a>
+            <button id="logoutBtn" class="logout-btn">Դուրս Գալ</button>
+        </div>
+    </header>
+
+    <div id="authBlock" class="auth-container">
+        <h2 id="authTitle">Մուտք Համակարգ</h2>
+        <input type="email" id="authEmail" placeholder="Էլ. հասցե (Email)">
+        <input type="password" id="authPassword" placeholder="Գաղտնաբառ (Password)">
+        <button id="submitAuthBtn" class="auth-btn">Մուտք Գործել</button>
+        <p id="toggleAuthMode" class="toggle-auth">Չունե՞ք հաշիվ։ Գրանցվեք</p>
     </div>
 
+    <div id="mainContent" class="main-content">
+        <section class="hero-section">
+            <h1>Առաջին թվային արժույթը, որը կարող ես արդյունահանել հեռախոսով</h1>
+            <p>Սկսիր մայնինգ անել RegisCoin ($REGC) հենց այսօր մեր անվճար հավելվածով։</p>
+
+            <div class="game-container">
+                <div id="userEmailDisplay" class="user-email-display"></div>
+                <div class="balance-text"><span id="balance">0.00</span> REGC</div>
+                <button id="claimBtn" class="main-btn">MINE / CLAIM</button>
+                <div id="timerDisplay" class="timer-text">Հաջորդ սեղմումը՝ 24:00:00</div>
+            </div>
+        </section>
+
+        <div class="listing-banner">
+            <h3>🚀 Մոտ Ապագայում՝ Լիստինգ Բորսաներում</h3>
+            <p>Կուտակման փուլի ավարտից հետո $REGC թոքենը պաշտոնապես կհայտնվի խոշորագույն կրիպտո-բորսաներում։</p>
+        </div>
+
+        <h2 class="section-title">Ի՞նչ կարող ես անել կուտակած $REGC-ով հիմա</h2>
+        <div class="rewards-container">
+            <a href="zexch.html" class="reward-link">
+                <div class="reward-card">
+                    <div class="reward-icon">🔥</div>
+                    <h4>RegisCode Զեղչեր</h4>
+                    <p>Օգտագործիր թոքենները RegisCode թիմին պատվերներ տալիս և ստացիր մինչև 30% զեղչ։</p>
+                </div>
+            </a>
+            <a href="it.html" class="reward-link">
+                <div class="reward-card">
+                    <div class="reward-icon">🎓</div>
+                    <h4>Անվճար Կրթություն</h4>
+                    <p>Բացիր RegisCode-ի ապագայում սպասվող պրոֆեսիոնալ IT և AI դասընթացները բացառապես $REGC թոքեններով։</p>
+                </div>
+            </a>
+        </div>
+
+        <footer>
+            <div class="social-links">
+                <a href="#" target="_blank">Twitter</a>
+                <a href="#" target="_blank">Facebook</a>
+                <a href="#" target="_blank">YouTube</a>
+                <a href="#" target="_blank">Instagram</a>
+            </div>
+            <p class="copy">&copy; 2026 Regis Network. All rights reserved. Պատրաստված է RegisCode թիմի կողմից։</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCduqq586dB8JVfJVkie52jCLOvlzV-T8A",
+            authDomain: "regisc.firebaseapp.com",
+            databaseURL: "https://regisc-default-rtdb.firebaseio.com",
+            projectId: "regisc",
+            storageBucket: "regisc.firebasestorage.app",
+            messagingSenderId: "582813847095",
+            appId: "1:582813847095:web:a20d1c0c57f1d9da4f39b2",
+            measurementId: "G-DGKWGP9QKX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const authBlock = document.getElementById('authBlock');
+        const mainContent = document.getElementById('mainContent');
+        const authTitle = document.getElementById('authTitle');
+        const authEmail = document.getElementById('authEmail');
+        const authPassword = document.getElementById('authPassword');
+        const submitAuthBtn = document.getElementById('submitAuthBtn');
+        const toggleAuthMode = document.getElementById('toggleAuthMode');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+        
+        const claimBtn = document.getElementById('claimBtn');
+        const balanceDisplay = document.getElementById('balance');
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        let currentUser = null;
+        let isSignUpMode = false;
+        let timerInterval = null;
+
+        toggleAuthMode.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                authTitle.innerText = "Գրանցում";
+                submitAuthBtn.innerText = "Գրանցվել";
+                toggleAuthMode.innerText = "Ունե՞ք հաշիվ։ Մուտք գործեք";
+            } else {
+                authTitle.innerText = "Մուտք Համակարգ";
+                submitAuthBtn.innerText = "Մուտք Գործել";
+                toggleAuthMode.innerText = "Չունե՞ք հաշիվ։ Գրանցվեք";
+            }
+        });
+
+        submitAuthBtn.addEventListener('click', () => {
+            const email = authEmail.value.trim();
+            const password = authPassword.value;
+
+            if(!email || !password) {
+                alert("Խնդրում ենք լրացնել բոլոր դաշտերը։");
+                return;
+            }
+
+            if (isSignUpMode) {
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        const userId = userCredential.user.uid;
+                        set(ref(database, 'users/' + userId), {
+                            email: email,
+                            balance: 0.00,
+                            nextClaimTime: 0
+                        });
+                    })
+                    .catch((error) => alert("Գրանցման սխալ: " + error.message));
+            } else {
+                signInWithEmailAndPassword(auth, email, password)
+                    .catch((error) => alert("Մուտքի սխալ: " + error.message));
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+            if(timerInterval) clearInterval(timerInterval);
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                authBlock.style.display = 'none';
+                mainContent.style.display = 'block';
+                logoutBtn.style.display = 'block';
+                userEmailDisplay.innerText = user.email;
+
+                const userRef = ref(database, 'users/' + user.uid);
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        const currentBalance = data.balance || 0;
+                        balanceDisplay.innerText = currentBalance.toFixed(2);
+                        
+                        const nextClaimTime = data.nextClaimTime || 0;
+                        const now = Date.now();
+                        if (now < nextClaimTime) {
+                            setupMinedState(nextClaimTime);
+                        } else {
+                            setupReadyState();
+                        }
+                    }
+                });
+            } else {
+                currentUser = null;
+                authBlock.style.display = 'block';
+                mainContent.style.display = 'none';
+                logoutBtn.style.display = 'none';
+                authEmail.value = "";
+                authPassword.value = "";
+            }
+        });
+
+        claimBtn.addEventListener('click', () => {
+            if (!currentUser) return;
+
+            const userRef = ref(database, 'users/' + currentUser.uid);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    const now = Date.now();
+                    const nextClaimTime = data.nextClaimTime || 0;
+
+                    if (now >= nextClaimTime) {
+                        const newBalance = (data.balance || 0) + 0.10; 
+                        const newNextClaimTime = now + (24 * 60 * 60 * 1000); 
+
+                        update(userRef, {
+                            balance: newBalance,
+                            nextClaimTime: newNextClaimTime
+                        }).then(() => {
+                            balanceDisplay.innerText = newBalance.toFixed(2);
+                            setupMinedState(newNextClaimTime);
+                        });
+                    }
+                }
+            });
+        });
+
+        function setupMinedState(nextTime) {
+            claimBtn.disabled = true;
+            claimBtn.innerText = "⛏️ Mined";
+            timerDisplay.style.display = "block";
+            
+            if(timerInterval) clearInterval(timerInterval);
+            startTimer(nextTime);
+        }
+
+        function setupReadyState() {
+            claimBtn.disabled = false;
+            claimBtn.innerText = "MINE / CLAIM";
+            timerDisplay.style.display = "none";
+        }
+
+        function startTimer(nextTime) {
+            timerInterval = setInterval(() => {
+                const now = Date.now();
+                const timeLeft = nextTime - now;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    setupReadyState();
+                    return;
+                }
+
+                let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                timerDisplay.innerText = "Հաջորդ սեղմումը՝ " + hours + ":" + minutes + ":" + seconds;
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
